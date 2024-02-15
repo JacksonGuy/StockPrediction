@@ -32,13 +32,9 @@ for code in currencyCodes:
     price = data.info['bid']
 
     changes["USD" + code] = price
-    
-    #print("USD/" + code)
-    #print(price)
-    #print()
 
-sleep(60)
 for i in range(10):
+    sleep(60)
     print("Minute " + str(i))
     for code in currencyCodes:
         data = yf.Ticker("USD" + code + "=X")
@@ -48,4 +44,3 @@ for i in range(10):
             print("Price increase for USD/" + code)
 
     print()
-    sleep(60)

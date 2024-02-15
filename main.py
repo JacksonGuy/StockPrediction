@@ -8,6 +8,10 @@ from tools import *
 import math
 import yfinance as yf
 
+class Investment:
+    currency = ""       # Name of the currency (EUR, AUD, etc)
+    usd_amout = 0       # How much of that currency in USD
+
 class Model:
     start_money = 0         # in USD
     portfolio = {}          # Currencies invested in
