@@ -1,4 +1,5 @@
 import yfinance as yf
+from tools import get_hist_data
 
 class Summary:
     def __init__(self, data):
@@ -10,11 +11,6 @@ class Summary:
         self.med = data[ int(self.data_len / 2) ]
         self.Q3 = data[ int(3 * (self.data_len / 4)) ]
         self.max = data[ self.data_len - 1 ]
-
-def get_hist_data(code):
-    curr = yf.Ticker("USD" + code + "=X")
-    hist = curr.history(period="7d", interval="1m")
-    return hist
 
 def get_change_summary(hist):
     # For loop
@@ -59,7 +55,7 @@ def get_price_summary(hist):
     prices = []
     prices_count = 0
     prices_sum = 0
-    start_price = hist["Close"].iloc[0]
+    start_price = hist["Close"].iloc[0]     # .iloc prevents futurewarning with pandas?
     end_price = 0
 
     for data in hist["Close"]:
@@ -71,40 +67,23 @@ def get_price_summary(hist):
     total_change = end_price - start_price 
     return {"mean" : (prices_sum / prices_count), "summary" : Summary(prices), "change" : total_change}
 
-def print_increase(data: Summary):
-    print("Mean Increase Time: " + str(data["increases"]["mean"]))
-    print("Min Increase Time: " + str(data["increases"]["summary"].min))
-    print("Q1 Time: " + str(data["increases"]["summary"].Q1))
-    print("Median Increase Time: " + str(data["increases"]["summary"].med))
-    print("Q3 Time: " + str(data["increases"]["summary"].Q3))
-    print("Max Increase Time: " + str(data["increases"]["summary"].max))
+def print_summary(data):
+    print("Mean Increase Time: " + str(data["mean"]))
+    print("Min Increase Time: " + str(data["summary"].min))
+    print("Q1 Time: " + str(data["summary"].Q1))
+    print("Median Increase Time: " + str(data["summary"].med))
+    print("Q3 Time: " + str(data["summary"].Q3))
+    print("Max Increase Time: " + str(data["summary"].max))
     print()
 
-def print_decreases(data: Summary):
-    print("Mean Decrease Time: " + str(data["decreases"]["mean"]))
-    print("Min Decrease Time: " + str(data["decreases"]["summary"].min))
-    print("Q1 Time: " + str(data["decreases"]["summary"].Q1))
-    print("Median Decrease Time: " + str(data["decreases"]["summary"].med))
-    print("Q3 Time: " + str(data["decreases"]["summary"].Q3))
-    print("Max Decrease Time: " + str(data["decreases"]["summary"].max))
-    print()
-
-def print_price(data: Summary):
-    print("Mean Price: " + str(data["mean"]))
-    print("Price Change: " + str(data["change"]))
-    print("Lowest Price: " + str(data["summary"].min))
-    print("Q1 Price: " + str(data["summary"].Q1))
-    print("Median Price: " + str(data["summary"].med))
-    print("Q3 Price: " + str(data["summary"].Q3))
-    print("Max Price: " + str(data["summary"].max))
-    print()
-
+# Remove this 
 if __name__ == "__main__":
-    data = get_hist_data("EUR")
+    data = get_hist_data("EUR", "7d", "1m")
     eur = get_change_summary(data)
     eur_price = get_price_summary(data)
 
     print()
-    print_increase(eur)
-    print_decreases(eur)
-    print_price(eur_price)
+    print_summary(eur["increases"])
+    print_summary(eur["decreases"])
+    print("Overall Price Change: " + str(eur_price["change"]))
+    print_summary(eur_price)

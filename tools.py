@@ -1,4 +1,5 @@
 import math
+import yfinance as yf
 
 def mean(set):
     size = len(set)
@@ -39,3 +40,8 @@ currencyCodes = [
     'BRL',      # Brazil
     'DKK'       # Denmark
 ]
+
+def get_hist_data(code, period, interval):
+    curr = yf.Ticker("USD" + code + "=X")
+    hist = curr.history(period=period, interval=interval)
+    return hist

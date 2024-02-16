@@ -1,9 +1,11 @@
 '''
 TODO
 convert stock_analysis to look at forex data
+might have to change forex_change to do open-to-close instead
+    of close-to-close
 '''
 
-from tools import *
+import tools
 import math
 import yfinance as yf
 
@@ -20,7 +22,7 @@ class Model:
 
     # Search for good initial trade
     def search_initial(self):
-        for code in currencyCodes:
+        for code in tools.currencyCodes:
             data = yf.Ticker("USD" + code + "=X")
             price = data.info["bid"]
 
