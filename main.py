@@ -1,7 +1,6 @@
 '''
 TODO
 convert stock_analysis to look at forex data
-forex_increases but more flexible
 '''
 
 from tools import *
