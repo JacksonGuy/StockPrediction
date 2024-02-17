@@ -6,19 +6,54 @@ A: Yes
 import tools
 import yfinance as yf
 
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 def get_avg_change(hist):
     change_sum = 0
 
     for i in range(len(hist) - 1):
-        start = hist["Close"].iloc[i]
-        end = hist["Close"].iloc[i + 1]
+        start = hist["Close"][i]
+        end = hist["Close"][i + 1]
         change_sum += (end - start)
 
     mean = change_sum / len(hist)
     return mean
 
+# Only works if period = 1 month 
+# and interval = 1 day
 def get_wbw_stdev(hist):
-    pass
+    num = 0
+    weeks = []
+
+    while (num < (len(hist)/5)):
+        currentWeek = []
+        for i in range(5):
+            index = (num * 5) + i
+            currentWeek.append(hist[i])
+        
+        stdev = tools.stdev(currentWeek)
+        weeks.append(stdev)
+        num += 1
+    
+    return tools.mean(weeks) 
+
+# Period = 7d, interval = 1h
+def get_dbd_stdev(hist):
+    num = 0
+    days = []
+
+    while (num < 7):
+        currentDay = []
+        for i in range(23):         # Fucking stupid
+            index = (num * 23) + i
+            currentDay.append(hist[i])
+
+        stdev = tools.stdev(currentDay)
+        days.append(stdev)
+        num += 1
+
+    return tools.mean(days)
 
 if __name__ == "__main__":
     currency = "AUD"
@@ -33,12 +68,15 @@ if __name__ == "__main__":
     min_stdev = tools.stdev(week_minute_data["Close"])
     hour_stdev = tools.stdev(week_hour_data["Close"])
     day_stdev = tools.stdev(month_daily_data["Close"])
-    
-    print()
+    wbw = get_wbw_stdev(month_daily_data["Close"])
+    dbd = get_dbd_stdev(week_hour_data["Close"])
+
     print("USD/" + currency)
     print("Standard Dev (minute): " + str(round(min_stdev, 5)))
     print("Standard Dev (hour): " + str(round(hour_stdev, 5)))
     print("Standard Dev (day): " + str(round(day_stdev, 5)))
+    print("Week-by-Week: " + str(round(wbw, 5)))
+    print("Day-by-Day: " + str(round(dbd, 5)))
 
     print("Average Change (minute): " + str(minute_change))
     print("Average Change (hour): " + str(hour_change))

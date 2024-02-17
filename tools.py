@@ -1,6 +1,9 @@
 import math
 import yfinance as yf
 
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 def mean(set):
     size = len(set)
     sum = 0
