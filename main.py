@@ -1,8 +1,6 @@
 '''
 TODO
 convert stock_analysis to look at forex data
-might have to change forex_change to do open-to-close instead
-    of close-to-close
 '''
 
 import tools
