@@ -4,7 +4,6 @@ Q: week-by-week with daily update or
 A: Yes
 '''
 import tools
-import yfinance as yf
 
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -55,8 +54,7 @@ def get_dbd_stdev(hist):
 
     return tools.mean(days)
 
-if __name__ == "__main__":
-    currency = "AUD"
+def get_analysis_info(currency, debug=False):
     week_minute_data = tools.get_hist_data(currency, "7d", "1m")
     week_hour_data = tools.get_hist_data(currency, "7d", "1h")
     month_daily_data = tools.get_hist_data(currency, "1mo", "1d")
@@ -71,13 +69,29 @@ if __name__ == "__main__":
     wbw = get_wbw_stdev(month_daily_data["Close"])
     dbd = get_dbd_stdev(week_hour_data["Close"])
 
-    print("USD/" + currency)
-    print("Standard Dev (minute): " + str(round(min_stdev, 5)))
-    print("Standard Dev (hour): " + str(round(hour_stdev, 5)))
-    print("Standard Dev (day): " + str(round(day_stdev, 5)))
-    print("Week-by-Week: " + str(round(wbw, 5)))
-    print("Day-by-Day: " + str(round(dbd, 5)))
+    if (debug):
+        print("USD/" + currency)
+        print("Standard Dev (minute): " + str(round(min_stdev, 5)))
+        print("Standard Dev (hour): " + str(round(hour_stdev, 5)))
+        print("Standard Dev (day): " + str(round(day_stdev, 5)))
+        print("Week-by-Week: " + str(round(wbw, 5)))
+        print("Day-by-Day: " + str(round(dbd, 5)))
 
-    print("Average Change (minute): " + str(minute_change))
-    print("Average Change (hour): " + str(hour_change))
-    print("Average Change (day): " + str(daily_change))
+        print("Average Change (minute): " + str(minute_change))
+        print("Average Change (hour): " + str(hour_change))
+        print("Average Change (day): " + str(daily_change))
+
+    return {
+        "minute_change" : minute_change,
+        "hour_change" : hour_change,
+        "daily_change" : daily_change,
+
+        "minute_stdev" : min_stdev,
+        "hour_stdev" : hour_change,
+        "day_stdev" : day_stdev,
+
+        "weekbyweek" : wbw,
+        "daybyday" : dbd,
+
+        "stdevs" : [min_stdev, hour_change, day_stdev, wbw, dbd]
+    }

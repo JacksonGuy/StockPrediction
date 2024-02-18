@@ -1,6 +1,9 @@
 import yfinance as yf
 from tools import get_hist_data
 
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
 class Summary:
     def __init__(self, data):
         data.sort()
@@ -68,22 +71,33 @@ def get_price_summary(hist):
     return {"mean" : (prices_sum / prices_count), "summary" : Summary(prices), "change" : total_change}
 
 def print_summary(data):
-    print("Mean Increase Time: " + str(data["mean"]))
-    print("Min Increase Time: " + str(data["summary"].min))
-    print("Q1 Time: " + str(data["summary"].Q1))
-    print("Median Increase Time: " + str(data["summary"].med))
-    print("Q3 Time: " + str(data["summary"].Q3))
-    print("Max Increase Time: " + str(data["summary"].max))
+    print("Mean: " + str(data["mean"]))
+    print("Min: " + str(data["summary"].min))
+    print("Q1: " + str(data["summary"].Q1))
+    print("Median: " + str(data["summary"].med))
+    print("Q3: " + str(data["summary"].Q3))
+    print("Max: " + str(data["summary"].max))
     print()
 
 # Remove this 
-if __name__ == "__main__":
-    data = get_hist_data("EUR", "7d", "1m")
-    eur = get_change_summary(data)
-    eur_price = get_price_summary(data)
+def get_changes_info(currency, debug=False):
+    data = get_hist_data(currency, "7d", "1m")
+    changes = get_change_summary(data)
+    price_info = get_price_summary(data)
 
-    print()
-    print_summary(eur["increases"])
-    print_summary(eur["decreases"])
-    print("Overall Price Change: " + str(eur_price["change"]))
-    print_summary(eur_price)
+    if (debug):
+        print()
+        print("Increases:")
+        print_summary(changes["increases"])
+    
+        print("Decreases")
+        print_summary(changes["decreases"])
+    
+        print("Price")
+        print("Overall Price Change: " + str(price_info["change"]))
+        print_summary(price_info)
+
+    return {
+        "changes" : changes,
+        "price_info" : price_info
+    }
