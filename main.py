@@ -1,14 +1,17 @@
 '''
 TODO
 how to weight different statistics? 
+We need to look at 1month,5day change (?)
 '''
 
 import tools
 from forex_analysis import *
 from forex_changes import *
 
-import math
 import yfinance as yf
+
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 class Investment:
     currency = ""       # Name of the currency (EUR, AUD, etc)
@@ -27,11 +30,12 @@ class Model:
     # Get information for buying trades
     def get_exchange_rates(self):
         for code in tools.currencyCodes:
-            data = yf.Ticker("USD" + code + "=X")
+            data = yf.Ticker(code + "USD=X")
             price = data.info["bid"]
-            self.exchange_rates["USD" + code] = price
+            self.exchange_rates[code + "USD"] = price
 
     def get_currency_data(self, currency):
+        self.get_exchange_rates()
         analysis_data = get_analysis_info(currency)
         change_data = get_changes_info(currency)
         self.currency_stats[currency] = {
@@ -43,24 +47,30 @@ class Model:
         self.get_currency_data(currency)
         data = self.currency_stats[currency]
         analysis_data = data["analysis"]
-        change_data = data["change"]
+        change_data = data["change"]["changes"]
 
         sdsum = 0
-        for sd in data["analysis"]["stdevs"]:
+        for sd in analysis_data["stdevs"]:
             sdsum += sd
 
-        a = 10
-        b = 1
-        c = 1
+        a = 0.1
+        b = 5
+        c = 5
 
         # The big deal
-        score = 1 + (a * sdsum) 
-        + b * (change_data["changes"]["increases"]["summary"].med - change_data["changes"]["decreases"]["summary"].med)
-        + c * (change_data["changes"]["increases"]["mean"] - change_data["changes"]["decreases"]["mean"])
+        score = (
+            1 + (a * (sdsum)/5)
+            + b * (change_data["increases"]["summary"].med - change_data["decreases"]["summary"].med)
+            + c * (change_data["increases"]["mean"] - change_data["decreases"]["mean"])
+        )
 
         print(currency + " Score : " + str(score))
 
 if __name__ == "__main__":
+    #test_analysis = get_analysis_info("EUR", debug=True)
+    #test_changes = get_changes_info("EUR", debug=True)
+    #print()
+
     dickbutt = Model(100)
     for code in tools.currencyCodes:
         dickbutt.get_score(code)

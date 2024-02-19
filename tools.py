@@ -45,6 +45,6 @@ currencyCodes = [
 ]
 
 def get_hist_data(code, period, interval):
-    curr = yf.Ticker("USD" + code + "=X")
+    curr = yf.Ticker(code + "USD=X")
     hist = curr.history(period=period, interval=interval)
     return hist

@@ -81,7 +81,7 @@ def print_summary(data):
 
 # Remove this 
 def get_changes_info(currency, debug=False):
-    data = get_hist_data(currency, "7d", "1m")
+    data = get_hist_data(currency, "5d", "1m")
     changes = get_change_summary(data)
     price_info = get_price_summary(data)
 

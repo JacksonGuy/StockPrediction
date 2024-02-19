@@ -24,12 +24,13 @@ def get_avg_change(hist):
 def get_wbw_stdev(hist):
     num = 0
     weeks = []
+    intervals = int(len(hist)/5)
 
-    while (num < (len(hist)/5)):
+    while (num < intervals):
         currentWeek = []
         for i in range(5):
             index = (num * 5) + i
-            currentWeek.append(hist[i])
+            currentWeek.append(hist[index])
         
         stdev = tools.stdev(currentWeek)
         weeks.append(stdev)
@@ -41,12 +42,13 @@ def get_wbw_stdev(hist):
 def get_dbd_stdev(hist):
     num = 0
     days = []
+    intervals = int(len(hist)/12)
 
-    while (num < 7):
+    while (num < intervals):
         currentDay = []
-        for i in range(23):         # Fucking stupid
-            index = (num * 23) + i
-            currentDay.append(hist[i])
+        for i in range(12):
+            index = (num * 12) + i
+            currentDay.append(hist[index])
 
         stdev = tools.stdev(currentDay)
         days.append(stdev)
@@ -55,7 +57,7 @@ def get_dbd_stdev(hist):
     return tools.mean(days)
 
 def get_analysis_info(currency, debug=False):
-    week_minute_data = tools.get_hist_data(currency, "7d", "1m")
+    week_minute_data = tools.get_hist_data(currency, "5d", "1m")
     week_hour_data = tools.get_hist_data(currency, "7d", "1h")
     month_daily_data = tools.get_hist_data(currency, "1mo", "1d")
 
