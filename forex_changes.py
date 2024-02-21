@@ -1,5 +1,4 @@
-import yfinance as yf
-from tools import get_hist_data
+import get_data
 
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -46,10 +45,12 @@ def get_change_summary(hist):
 
     return {
         "increases" : {
-            "mean" : (inc_sum / len(inc_lengths)), "summary" : Summary(inc_lengths)
+            "mean" : (inc_sum / len(inc_lengths)), 
+            "summary" : Summary(inc_lengths)
         },
         "decreases" : {
-            "mean" : (dec_sum / len(dec_lengths)), "summary" : Summary(dec_lengths) 
+            "mean" : (dec_sum / len(dec_lengths)), 
+            "summary" : Summary(dec_lengths) 
         }
     }    
 
@@ -58,7 +59,7 @@ def get_price_summary(hist):
     prices = []
     prices_count = 0
     prices_sum = 0
-    start_price = hist["Close"].iloc[0]     # .iloc prevents futurewarning with pandas?
+    start_price = hist["Close"][0]
     end_price = 0
 
     for data in hist["Close"]:
@@ -66,9 +67,13 @@ def get_price_summary(hist):
         prices_count += 1
         prices_sum += data
 
-    end_price = hist["Close"].iloc[prices_count-1]
+    end_price = hist["Close"][prices_count-1]
     total_change = end_price - start_price 
-    return {"mean" : (prices_sum / prices_count), "summary" : Summary(prices), "change" : total_change}
+    return {
+        "mean" : (prices_sum / prices_count),
+        "summary" : Summary(prices), 
+        "change" : total_change
+    }
 
 def print_summary(data):
     print("Mean: " + str(data["mean"]))
@@ -79,9 +84,8 @@ def print_summary(data):
     print("Max: " + str(data["summary"].max))
     print()
 
-# Remove this 
 def get_changes_info(currency, debug=False):
-    data = get_hist_data(currency, "5d", "1m")
+    data = get_data.get_hist_data(currency, "5d", "1m")
     changes = get_change_summary(data)
     price_info = get_price_summary(data)
 

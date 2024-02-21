@@ -1,9 +1,5 @@
-'''
-Q: week-by-week with daily update or 
-   day-by-day with minute/hour updates?
-A: Yes
-'''
 import tools
+import get_data
 
 import warnings
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -57,9 +53,9 @@ def get_dbd_stdev(hist):
     return tools.mean(days)
 
 def get_analysis_info(currency, debug=False):
-    week_minute_data = tools.get_hist_data(currency, "5d", "1m")
-    week_hour_data = tools.get_hist_data(currency, "7d", "1h")
-    month_daily_data = tools.get_hist_data(currency, "1mo", "1d")
+    week_minute_data = get_data.get_hist_data(currency, "5d", "1m")
+    week_hour_data = get_data.get_hist_data(currency, "7d", "1h")
+    month_daily_data = get_data.get_hist_data(currency, "1mo", "1d")
 
     minute_change = get_avg_change(week_minute_data)
     hour_change = get_avg_change(week_hour_data)
@@ -72,7 +68,7 @@ def get_analysis_info(currency, debug=False):
     dbd = get_dbd_stdev(week_hour_data["Close"])
 
     if (debug):
-        print("USD/" + currency)
+        print(currency + "/USD")
         print("Standard Dev (minute): " + str(round(min_stdev, 5)))
         print("Standard Dev (hour): " + str(round(hour_stdev, 5)))
         print("Standard Dev (day): " + str(round(day_stdev, 5)))
